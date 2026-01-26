@@ -338,21 +338,24 @@ function stopIntro(){
 
 function ensureIntro(){
   if(!introPlaying) tryPlayIntro();
-}
 
-// Auto-play intro on the first user interaction anywhere (once)
-let __introAutoDone = false;
-function __introAutoHandler(){
-  if(__introAutoDone) return;
-  __introAutoDone = true;
-  try{ tryPlayIntro(); }catch(e){}
-  document.removeEventListener("pointerdown", __introAutoHandler, true);
-  document.removeEventListener("touchstart", __introAutoHandler, true);
-  document.removeEventListener("keydown", __introAutoHandler, true);
+
+// Tự phát intro ở "cú chạm/nhấp đầu tiên" trên trang (giống game cũ)
+// (Trình duyệt vẫn yêu cầu có tương tác người dùng, nên ta bắt sự kiện sớm nhất)
+let __introArmed = true;
+function __tryAutoIntroOnce(){
+  if(!__introArmed) return;
+  __introArmed = false;
+  try{ __tryAutoIntroOnce(); }catch(e){}
+  document.removeEventListener("pointerdown", __tryAutoIntroOnce, true);
+  document.removeEventListener("touchstart", __tryAutoIntroOnce, true);
+  document.removeEventListener("keydown", __tryAutoIntroOnce, true);
 }
-document.addEventListener("pointerdown", __introAutoHandler, true);
-document.addEventListener("touchstart", __introAutoHandler, true);
-document.addEventListener("keydown", __introAutoHandler, true);
+document.addEventListener("pointerdown", __tryAutoIntroOnce, true);
+document.addEventListener("touchstart", __tryAutoIntroOnce, true);
+document.addEventListener("keydown", __tryAutoIntroOnce, true);
+
+}
 
 let audioOn = true;
 let audioCtx = null;
@@ -879,10 +882,12 @@ btnStart.addEventListener("click", ()=>{
   }
   if(playerWarn) playerWarn.style.display = "none";
 
-  // Tắt intro ngay khi bắt đầu chơi để học sinh tập trung
-  try{ stopIntro(); __introAutoDone = true; }catch(e){}
 
   try{ if(audioOn) beep(440, 20); }catch(e){} // unlock audio
+  // Phát intro sau thao tác người dùng để tránh bị chặn autoplay
+  try{ __tryAutoIntroOnce(); }catch(e){}
+  // Ngừng intro ngay khi bắt đầu chơi để học sinh tập trung
+  try{ stopIntro(); __introArmed = false; }catch(e){}
   startNewGame(name, cls);
 });
 
@@ -983,72 +988,6 @@ renderStats();
   document.addEventListener('mousedown', play, true);
   document.addEventListener('touchstart', play, true);
   document.addEventListener('keydown', play, true);
-})();
-</script>
-
-
-<script>
-/* Intro manager (minimal patch): play on first user interaction, stop immediately when pressing Start */
-(function(){
-  // Create/hold a single global audio instance so we can always stop it.
-  if (!window.__INTRO_AUDIO) {
-    try {
-      window.__INTRO_AUDIO = new Audio("intro.mp3");
-      window.__INTRO_AUDIO.preload = "auto";
-      window.__INTRO_AUDIO.loop = false;
-      window.__INTRO_AUDIO.volume = 1;
-    } catch(e) {}
-  }
-  let playedOnce = false;
-
-  function safePlayIntroOnce(){
-    if (playedOnce) return;
-    playedOnce = true;
-    const a = window.__INTRO_AUDIO;
-    if (!a) return;
-    try {
-      a.muted = false;
-      a.volume = 1;
-      a.currentTime = 0;
-      const p = a.play();
-      if (p && p.catch) p.catch(()=>{});
-    } catch(e) {}
-  }
-
-  function safeStopIntro(){
-    const a = window.__INTRO_AUDIO;
-    if (!a) return;
-    try { a.pause(); } catch(e) {}
-    try { a.currentTime = 0; } catch(e) {}
-  }
-
-  // Play intro on the first real user interaction anywhere on the page
-  function firstInteract(){
-    safePlayIntroOnce();
-    document.removeEventListener("pointerdown", firstInteract, true);
-    document.removeEventListener("mousedown", firstInteract, true);
-    document.removeEventListener("touchstart", firstInteract, true);
-    document.removeEventListener("keydown", firstInteract, true);
-  }
-  document.addEventListener("pointerdown", firstInteract, true);
-  document.addEventListener("mousedown", firstInteract, true);
-  document.addEventListener("touchstart", firstInteract, true);
-  document.addEventListener("keydown", firstInteract, true);
-
-  // Stop intro immediately when pressing Start (capture phase so it runs before game logic)
-  function armStopOnStart(){
-    const btn = document.getElementById("btnStart");
-    if (!btn) return;
-    btn.addEventListener("click", function(){
-      safeStopIntro();
-    }, true);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", armStopOnStart);
-  } else {
-    armStopOnStart();
-  }
 })();
 </script>
 
