@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ÔN TẬP TÍCH PHÂN - TẠO BỞI MR SANG</title>
+<style>
+  :root {
+    --bg1:#1f3243;
+    --bg2:#22435c;
+    --card:rgba(255,255,255,.08);
+    --line:rgba(255,255,255,.14);
+    --text:#eaf4ff;
+    --muted:rgba(234,244,255,.78);
+    --green:#19c37d;
+    --orange:#ff8a00;
+    --orange2:#ffb14a;
+    --bad:#ff4d4f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(900px 500px at 15% 0%, rgba(25,195,125,.35), transparent 55%),
+      radial-gradient(900px 520px at 85% 10%, rgba(255,138,0,.35), transparent 55%),
+      linear-gradient(180deg, var(--bg2), var(--bg1));
+    min-height:100vh;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:18px 14px 28px}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 16px;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(135deg, rgba(0,120,255,.95), rgba(0,180,255,.95));
+    box-shadow:0 14px 40px rgba(0,0,0,.25);
+  }
+  /* Topbar blue + white text (only this area) */
+  .topbar .title h1,
+  .topbar .sub,
+  .topbar .pill{ color:#ffffff !important; }
+  .topbar .pill{
+    border-color: rgba(255,255,255,.35) !important;
+    background: rgba(255,255,255,.18) !important;
+  }
+
+  /* Title text on orange topbar only */
+  .topbar .title h1, .topbar .title .sub{color:#0b2a6a;}
+
+  .title{display:flex;flex-direction:column;gap:4px}
+  .title h1{margin:0;font-size:18px;letter-spacing:.2px}
+  .title .sub{font-size:12px;color:var(--muted)}
+  .pill{
+    font-size:12px;border:1px solid var(--line);border-radius:999px;
+    padding:8px 10px;background:rgba(0,0,0,.15);color:var(--muted);
+    white-space:nowrap;
+  }
+  .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+  @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+  .card{
+    border:1px solid var(--line);border-radius:18px;padding:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    box-shadow:0 14px 40px rgba(0,0,0,.25);
+  }
+  .btn{
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:14px;padding:10px 12px;
+    background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+    color:var(--text);cursor:pointer;transition:.12s transform, .12s filter;
+    user-select:none;
+  }
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none;filter:none}
+  .btn.primary{
+    border-color: rgba(25,195,125,.55);
+    box-shadow: 0 0 0 2px rgba(25,195,125,.12) inset;
+  }
+  .btn.orange{
+    border-color: rgba(255,138,0,.65);
+    box-shadow: 0 0 0 2px rgba(255,138,0,.12) inset;
+  }
+  .btn.ghost{background:rgba(0,0,0,.10)}
+  .btn.exit{
+    background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06)), #ff3b30;
+    border-color: rgba(255,59,48,.95);
+    box-shadow: 0 0 0 2px rgba(255,59,48,.18) inset;
+    color:#fff;
+    font-weight:800;
+  }
+  .btn.exit:hover{filter:brightness(1.05)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted);font-size:13px;line-height:1.5}
+  .sep{height:1px;background:rgba(255,255,255,.12);margin:12px 0}
+  .stats{display:grid;grid-template-columns:1fr;gap:10px}
+  .stat{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;background:rgba(0,0,0,.14)}
+  .stat .k{font-size:12px;color:var(--muted)}
+  .stat .v{font-size:18px;font-weight:800;margin-top:4px}
+  .screen{display:none}
+  .screen.active{display:block}
+  .qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+  .qleft{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+  .qnum{font-weight:800;font-size:22px}
+  .timer{font-variant-numeric:tabular-nums;font-size:20px}
+  .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;border:1px solid rgba(255,255,255,.12)}
+  .bar > div{height:100%;width:100%;background:linear-gradient(90deg, var(--green), var(--orange))}
+  .qtext{margin-top:12px;font-size:22px;line-height:1.6;color:#fff}
+  .qtext, .qtext *{color:#fff !important}
+  .choice, .choice *{color:#fff !important}
+  .choice b{color:var(--orange2) !important}
+
+  .qtext img{max-height:122px;vertical-align:middle;filter:invert(1) brightness(1.9) contrast(2.2);image-rendering:-webkit-optimize-contrast;transform:translateZ(0);}
+.choices img{max-height:112px;vertical-align:middle;filter:invert(1) brightness(1.9) contrast(2.2);image-rendering:-webkit-optimize-contrast;transform:translateZ(0);}
+  .choices{display:grid;gap:10px;margin-top:12px}
+  .choice{
+    text-align:left;padding:16px 14px;border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.12);
+    font-size:20px;line-height:1.4;
+  }
+  .choice:hover{border-color: rgba(255,177,74,.70)}
+  .choice.correct{border-color: rgba(25,195,125,.85); box-shadow: 0 0 0 2px rgba(25,195,125,.12) inset;}
+  .choice.wrong{border-color: rgba(255,77,79,.85); box-shadow: 0 0 0 2px rgba(255,77,79,.12) inset;}
+  .choice.disabled{pointer-events:none;opacity:.95}
+  .toast{margin-top:10px;font-size:14px}
+  .toast.good{color:var(--green)}
+  .toast.bad{color:var(--bad)}
+  .footer{text-align:center;margin-top:14px;color:rgba(234,244,255,.65);font-size:12px}
+
+  /* Player form */
+  .formGrid{display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin:14px 0 6px;}
+  @media (max-width:700px){ .formGrid{grid-template-columns:1fr;} }
+  .field label{display:block; font-size:13px; color:var(--muted); margin:0 0 6px; font-weight:600;}
+  input.text{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.12);
+    color: var(--text);
+    outline:none;
+    font-size:16px;
+  }
+  input.text:focus{border-color: rgba(255,138,0,.7); box-shadow:0 0 0 2px rgba(255,138,0,.12) inset;}
+  .warn{margin-top:8px; color:#ffd166; font-size:13px;}
+
+
+  .qright{display:flex;align-items:center;gap:10px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="title">
+      <h1>ÔN TẬP TÍCH PHÂN</h1>
+      <div class="sub">TẠO BỞI MR SANG</div>
+    </div>
+    <div class="pill">20 câu / lượt • 60 giây / câu</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="screen active" id="screenStart">
+        <audio id="introAudio" preload="auto" playsinline src="intro.mp3"></audio>
+        <div class="muted">
+          Nhấn <b>Bắt đầu</b> để chơi. Mỗi lượt gồm <b>20 câu</b> lấy ngẫu nhiên từ kho. Mỗi câu có <b>60 giây</b>.
+        </div>
+        <div class="sep"></div>
+
+        <div class="formGrid">
+          <div class="field">
+            <label for="playerName">Họ và tên</label>
+            <input class="text" id="playerName" name="mr_sang_player_name" type="text" placeholder="Nhập họ và tên..." autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="playerClass">Lớp</label>
+            <input class="text" id="playerClass" name="mr_sang_player_class" type="text" placeholder="Ví dụ: 12A1" autocomplete="off" />
+          </div>
+        </div>
+        <div class="warn" id="playerWarn" style="display:none">Vui lòng nhập đầy đủ <b>Họ và tên</b> và <b>Lớp</b> để bắt đầu.</div>
+        <div class="row">
+          <button class="btn primary" id="btnStart">Bắt đầu</button>
+          <button class="btn ghost" id="btnHow">Hướng dẫn</button>
+        </div>
+        <div class="toast muted" id="howText" style="display:none"></div>
+      </div>
+
+      <div class="screen" id="screenGame">
+        <div class="qhead">
+          <div class="qleft"><div class="qnum" id="qNum">Câu 1/20</div><button class="btn exit" id="btnExit" type="button">Thoát</button></div>
+<div class="qright"><div class="timer" id="qTimer">01:00</div></div></div>
+        <div class="bar"><div id="timeBar"></div></div>
+
+        <div class="qtext" id="qText"></div>
+        <div class="choices" id="choices"></div>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="sep"></div>
+        <div class="row">
+          <button class="btn ghost" id="btnPrev" disabled>← Câu trước</button>
+          <button class="btn orange" id="btnNext" disabled>Câu tiếp →</button>
+          <button class="btn ghost" id="btnExitReview" style="display:none">↩ Trở lại kết quả</button>
+          <span class="muted" id="navHint">Chọn đáp án để mở nút “Câu tiếp”.</span>
+        </div>
+      </div>
+
+      <div class="screen" id="screenResult">
+        <div class="qhead">
+          <div class="qnum">Hoàn thành!</div>
+          <div class="pill" id="resultTime">—</div>
+        </div>
+        <div class="sep"></div>
+        <div class="stats">
+          <div class="stat"><div class="k">Số câu đúng</div><div class="v" id="rGood">0</div></div>
+          <div class="stat"><div class="k">Số câu sai</div><div class="v" id="rBad">0</div></div>
+          <div class="stat"><div class="k">Điểm (10)</div><div class="v" id="rScore">0</div></div>
+        </div>
+        <div class="sep"></div>
+        <div class="row">
+          <button class="btn primary" id="btnReplay">Chơi lượt mới</button>
+          <button class="btn orange" id="btnExport">Tải Excel kết quả</button>
+          <button class="btn ghost" id="btnReview">Xem lại</button>
+        </div>
+        <div class="toast muted" id="exportNote">Nhấn <b>Tải Excel kết quả</b> để tải file gửi giáo viên.</div>
+        <div class="toast muted" id="reviewNote" style="display:none">
+          Chế độ xem lại chỉ hiển thị câu + đáp án đã chọn và đánh dấu đúng/sai.
+        </div>
+      </div>
+
+      <div class="footer">© ÔN TẬP TÍCH PHÂN - TẠO BỞI MR SANG</div>
+    </div>
+
+    <div class="card">
+      <div class="muted"><b>Thống kê lượt chơi</b></div>
+      <div class="sep"></div>
+      <div class="stats">
+        <div class="stat"><div class="k">Tiến độ</div><div class="v" id="sProg">0/20</div></div>
+        <div class="stat"><div class="k">Đúng</div><div class="v" id="sGood">0</div></div>
+        <div class="stat"><div class="k">Sai</div><div class="v" id="sBad">0</div></div>
+      </div>
+      <div class="sep"></div>
+      <div class="muted">
+        <b>Mẹo</b><br/>
+        • Nếu hết thời gian mà chưa chọn, hệ thống tính là <b>sai</b> và chuyển câu tiếp theo.<br/>
+        • Có thể quay lại câu trước để xem lại, nhưng không đổi đáp án sau khi đã chấm.
+      </div>
+      <div class="sep"></div>
+      <div class="row">
+        <button class="btn ghost" id="btnStop" disabled>Kết thúc sớm</button>
+        <button class="btn ghost" id="btnMute">Tắt âm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROUP1 = [{"id": "G1_Q1", "q": "Cho $\\\\int_{1}^{3} f(x) dx = 5$ và $\\\\int_{1}^{3} g(x) dx = 2$. Tính $I = \\\\int_{1}^{3} (f(x) - g(x)) dx$.", "A": "$7$", "B": "$3$", "C": "$-3$", "D": "$10$", "correct": "B"}, {"id": "G1_Q2", "q": "Cho $\\\\int_{0}^{2} f(x) dx = 4$. Tính $I = \\\\int_{0}^{2} 3f(x) dx$.", "A": "$4$", "B": "$7$", "C": "$12$", "D": "$1$", "correct": "C"}, {"id": "G1_Q3", "q": "Nếu $\\\\int_{1}^{3} f(x) dx = 6$ và $\\\\int_{1}^{2} f(x) dx = 2$, thì $\\\\int_{2}^{3} f(x) dx$ bằng bao nhiêu?", "A": "$8$", "B": "$4$", "C": "$-4$", "D": "$3$", "correct": "B"}, {"id": "G1_Q4", "q": "Tính $\\\\int\\\\limits_{-2}^{-1}f(x)\\\\text{d}x$. Biết $F(x)$ là một nguyên hàm của $f(x)$, $F(-2)=2$ và $F(-1)=6$", "A": "$3$.", "B": "$7$.", "C": "$4$.", "D": "$5$.", "correct": "C"}, {"id": "G1_Q5", "q": "Tính $F(1)$. Biết $F(x)$ là một nguyên hàm của $f(x)=6x^4-2x+4$ và $F(-1)=4$", "A": "$\\\\dfrac{74}{5}$.", "B": "$\\\\dfrac{72}{5}$.", "C": "$15$.", "D": "$\\\\dfrac{73}{5}$.", "correct": "B"}, {"id": "G1_Q6", "q": "Tính $F(1)-3$. Biết $F(x)$ là một nguyên hàm của $f(x)=8x^3+6x-2$ và $F(0)=3$", "A": "$3$.", "B": "$5$.", "C": "$4$.", "D": "$0$.", "correct": "A"}, {"id": "G1_Q7", "q": "Tính $f(6)-3$. Biết $f'(x)=-4x^4+x+3$ và $f(3)=4$", "A": "$-6003$.", "B": "$-\\\\dfrac{60027}{10}$.", "C": "$-\\\\dfrac{60029}{10}$.", "D": "$-\\\\dfrac{30014}{5}$.", "correct": "C"}, {"id": "G1_Q8", "q": "Biết $\\\\int\\\\limits_{0}^{3}f(x)\\\\text{d}x=-2$, tính $\\\\int\\\\limits_{0}^{3}5f(x)\\\\text{d}x$", "A": "$-13$.", "B": "$-11$.", "C": "$-9$.", "D": "$-10$.", "correct": "D"}, {"id": "G1_Q9", "q": "Biết $\\\\int\\\\limits_{2}^{0}8f(x)\\\\text{d}x=-4$, tính $\\\\int\\\\limits_{0}^{2}f(x)\\\\text{d}x$", "A": "$2$.", "B": "$\\\\dfrac{1}{2}$.", "C": "$0$.", "D": "$-1$.", "correct": "B"}, {"id": "G1_Q10", "q": "Biết $\\\\int\\\\limits_{0}^{5}4f(x)\\\\text{d}x=-5$, $\\\\int\\\\limits_{0}^{3}6f(y)\\\\text{d}y=3$, tính $\\\\int\\\\limits_{3}^{5}f(z)\\\\text{d}z$", "A": "$-1$.", "B": "$-\\\\dfrac{5}{2}$.", "C": "$-\\\\dfrac{3}{2}$.", "D": "$-\\\\dfrac{7}{4}$.", "correct": "D"}, {"id": "G1_Q11", "q": "Biết $\\\\int\\\\limits_{-1}^{2}3f(x)\\\\text{d}x=4$, $\\\\int\\\\limits_{0}^{-1}3f(y)\\\\text{d}y=-2$, tính $\\\\int\\\\limits_{0}^{2}f(z)\\\\text{d}z$", "A": "$\\\\dfrac{5}{3}$.", "B": "$\\\\dfrac{2}{3}$.", "C": "$0$.", "D": "$-\\\\dfrac{1}{3}$.", "correct": "B"}, {"id": "G1_Q12", "q": "Biết $\\\\int\\\\limits_{2}^{10}2f(x)\\\\text{d}x=4$, $\\\\int\\\\limits_{7}^{4}2f(y)\\\\text{d}y=2$, tính $\\\\int\\\\limits_{2}^{4}f(z)\\\\text{d}z+\\\\int\\\\limits_{7}^{10}f(z)\\\\text{d}z$", "A": "$3$.", "B": "$0$.", "C": "$6$.", "D": "$2$.", "correct": "A"}, {"id": "G1_Q13", "q": "Biết $\\\\int\\\\limits_{2}^{4}5f(x)\\\\text{d}x=5$, $\\\\int\\\\limits_{4}^{2}9g(y)\\\\text{d}y=-5$, tính $\\\\int\\\\limits_{2}^{4}(f(x)+g(x))\\\\text{d}x$", "A": "$\\\\dfrac{16}{9}$.", "B": "$\\\\dfrac{14}{9}$.", "C": "$\\\\dfrac{11}{9}$.", "D": "$\\\\dfrac{5}{3}$.", "correct": "B"}];
+const GROUP2 = [{"id": "G2_Q14", "q": "Biết $\\\\int\\\\limits_{1}^{3}\\\\left(8f(x)+3g(x)\\\\right)\\\\text{d}x=8$, $\\\\int\\\\limits_{1}^{3}\\\\left(-16f(y)+7g(y)\\\\right)\\\\text{d}y=5$, tính $\\\\int\\\\limits_{1}^{3}f(z)\\\\text{d}z$", "A": "$\\\\dfrac{21}{52}$.", "B": "$\\\\dfrac{11}{26}$.", "C": "$\\\\dfrac{41}{104}$.", "D": "$\\\\dfrac{3}{8}$.", "correct": "C"}, {"id": "G2_Q15", "q": "Biết $\\\\int\\\\limits_{2}^{3}\\\\left(7f(x)-5g(x)\\\\right)\\\\text{d}x=8$, $\\\\int\\\\limits_{2}^{3}\\\\left(35f(y)-4g(y)\\\\right)\\\\text{d}y=-3$, tính $\\\\int\\\\limits_{2}^{3}g(z)\\\\text{d}z$", "A": "$-\\\\dfrac{46}{21}$.", "B": "$-\\\\dfrac{43}{21}$.", "C": "$-2$.", "D": "$-\\\\dfrac{15}{7}$.", "correct": "B"}, {"id": "G2_Q16", "q": "Biết $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}3f(x)\\\\text{d}x=3$, tính $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}\\\\left(3\\\\sin x-5f(x)\\\\right)\\\\text{d}x$", "A": "$1$.", "B": "$-5$.", "C": "$-2$.", "D": "$-3$.", "correct": "C"}, {"id": "G2_Q17", "q": "Biết $\\\\int\\\\limits_{2}^{3}5f(x)\\\\text{d}x=8,\\\\int\\\\limits_{2}^{3}g(x)\\\\text{d}x=4$, tính $\\\\int\\\\limits_{2}^{3}\\\\left(5x+7f(x)+6g(x)\\\\right)\\\\text{d}x$", "A": "$\\\\dfrac{237}{5}$.", "B": "$\\\\dfrac{238}{5}$.", "C": "$\\\\dfrac{239}{5}$.", "D": "$\\\\dfrac{477}{10}$.", "correct": "D"}, {"id": "G2_Q18", "q": "Biết $y=f(x)$ là hàm số chẵn và $\\\\int\\\\limits_{-4}^{4}f(x)\\\\text{d}x=2$. Tính $\\\\int\\\\limits_{0}^{4}5f(x)\\\\text{d}x$", "A": "$5$.", "B": "$3$.", "C": "$8$.", "D": "$6$.", "correct": "A"}, {"id": "G2_Q19", "q": "Biết $y=f(x)$ là hàm số lẻ và $\\\\int\\\\limits_{-3}^{5}f(x)\\\\text{d}x=-3$. Tính $\\\\int\\\\limits_{3}^{5}5f(x)\\\\text{d}x$", "A": "$-17$.", "B": "$-13$.", "C": "$-12$.", "D": "$-15$.", "correct": "D"}, {"id": "G2_Q20", "q": "Biết $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}\\\\left(6\\\\sin 7x+7\\\\right)\\\\text{d}x=a\\\\pi+b$, tính $a+b$", "A": "$\\\\dfrac{29}{7}$.", "B": "$\\\\dfrac{32}{7}$.", "C": "$\\\\dfrac{61}{14}$.", "D": "$\\\\dfrac{59}{14}$.", "correct": "C"}, {"id": "G2_Q21", "q": "Biết $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}\\\\left(10\\\\cos 11x+10\\\\right)\\\\text{d}x=a\\\\pi+b$, tính $a+b$", "A": "$\\\\dfrac{45}{11}$.", "B": "$\\\\dfrac{46}{11}$.", "C": "$\\\\dfrac{43}{11}$.", "D": "$\\\\dfrac{48}{11}$.", "correct": "A"}, {"id": "G2_Q22", "q": "Biết $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}\\\\left(9\\\\sin 5x+7x+7\\\\right)\\\\text{d}x=a\\\\pi^2+b\\\\pi+c$, tính $a+b+c$", "A": "$\\\\dfrac{247}{40}$.", "B": "$\\\\dfrac{249}{40}$.", "C": "$\\\\dfrac{25}{4}$.", "D": "$\\\\dfrac{61}{10}$.", "correct": "A"}, {"id": "G2_Q23", "q": "Biết $\\\\int\\\\limits_{0}^{\\\\dfrac{\\\\pi}{2}}\\\\left(3\\\\cos 9x+7x-3\\\\right)\\\\text{d}x=a\\\\pi^2+b\\\\pi+c$, tính $a+b+c$", "A": "$-\\\\dfrac{7}{24}$.", "B": "$-\\\\dfrac{5}{24}$.", "C": "$-\\\\dfrac{1}{3}$.", "D": "$-\\\\dfrac{1}{6}$.", "correct": "A"}, {"id": "G2_Q24", "q": "Cho hàm số $f(x) = x^2$. Giá trị của tích phân $\\\\int_{1}^{m} f(x)dx$ là $13$ thì tham số $m$ bằng bao nhiêu?", "A": "$m=1$", "B": "$m=2$", "C": "$m=3$", "D": "$m=4$", "correct": "C"}, {"id": "G2_Q25", "q": "Tính tích phân $I = \\\\int_{0}^{1} (2x+a) dx$. Biết $I=3$, tìm giá trị của $a$.", "A": "$a=1$", "B": "$a=2$", "C": "$a=3$", "D": "$a=4$", "correct": "C"}, {"id": "G2_Q26", "q": "Cho hàm số $f(x) = e^x$. Tính tích phân $I = \\\\int_{a}^{0} f(x)dx$. Biết $I=1-e^{-1}$, tìm giá trị của $a$.", "A": "$a=1$", "B": "$a=-1$", "C": "$a=0$", "D": "$a=e$", "correct": "B"}, {"id": "G2_Q27", "q": "Giá trị của tích phân $\\\\int_{1}^{2} \\\\dfrac{k}{x} dx$ bằng $\\\\ln 16$. Tìm tham số $k$.", "A": "$k=1$", "B": "$k=2$", "C": "$k=3$", "D": "$k=4$", "correct": "D"}, {"id": "G2_Q28", "q": "Cho $m$ là hằng số. Tính tích phân $I = \\\\int_{0}^{1} (mx+1) dx$. Biết $I=\\\\dfrac{5}{2}$, tìm $m$.", "A": "$m=1$", "B": "$m=2$", "C": "$m=3$", "D": "$m=4$", "correct": "C"}, {"id": "G2_Q29", "q": "Cho tích phân $J = \\\\int_{0}^{a} e^{2x} dx$. Tìm $a$ để $J = \\\\dfrac{e^4-1}{2}$.", "A": "$a=1$", "B": "$a=2$", "C": "$a=3$", "D": "$a=4$", "correct": "B"}, {"id": "G2_Q30", "q": "Cho tích phân $K = \\\\int_{1}^{m} (x+1) dx$. Tìm $m$ biết $K=4$.", "A": "$m=1$", "B": "$m=2$", "C": "$m=3$", "D": "$m=4$", "correct": "C"}, {"id": "G2_Q31", "q": "Cho hàm số $g(x) = ax^2$. Biết $\\\\int_{0}^{2} g(x) dx = 8$, tìm giá trị của $a$.", "A": "$a=1$", "B": "$a=2$", "C": "$a=3$", "D": "$a=4$", "correct": "C"}, {"id": "G2_Q32", "q": "Tìm tham số $m$ sao cho $\\\\int_{1}^{2} \\\\dfrac{m}{2x-1} dx = \\\\ln 3$.", "A": "$m=1$", "B": "$m=2$", "C": "$m=3$", "D": "$m=4$", "correct": "B"}, {"id": "G2_Q33", "q": "Cho tích phân $P = \\\\int_{0}^{1} (x+a) dx$ và $Q = \\\\int_{0}^{1} (x^2-a) dx$. Tìm $a$ biết $P=Q$.", "A": "$a=\\\\dfrac{1}{6}$", "B": "$a=\\\\dfrac{1}{3}$", "C": "$a=\\\\dfrac{1}{2}$", "D": "$a=\\\\dfrac{2}{3}$", "correct": "A"}];
+const GROUP3 = [{"id": "G3_Q34", "q": "Biết $\\\\int_{1}^{3} 4f(x)dx = 10$, $\\\\int_{1}^{3} g(x)dx = 3$, tính $\\\\int_{1}^{3} (2x + 3f(x) + 5g(x))dx$", "A": "$\\\\dfrac{59}{2}$.", "B": "$\\\\dfrac{63}{2}$.", "C": "$\\\\underline{\\\\dfrac{61}{2}}$.", "D": "$\\\\dfrac{60}{2}$.", "correct": "C"}, {"id": "G3_Q35", "q": "Biết $\\\\int_{2}^{4} 3f(x)dx = 9$, $\\\\int_{2}^{4} g(x)dx = 2$, tính $\\\\int_{2}^{4} (3x + 2f(x) + 4g(x))dx$", "A": "$\\\\underline{\\\\dfrac{64}{2}}$.", "B": "$\\\\dfrac{65}{2}$.", "C": "$\\\\dfrac{63}{2}$.", "D": "$\\\\dfrac{62}{2}$.", "correct": "A"}, {"id": "G3_Q36", "q": "Biết $\\\\int_{0}^{2} 5f(x)dx = 10$, $\\\\int_{0}^{2} g(x)dx = 6$, tính $\\\\int_{0}^{2} (4x + 6f(x) + 3g(x))dx$", "A": "$\\\\dfrac{75}{2}$.", "B": "$\\\\dfrac{77}{2}$.", "C": "$\\\\underline{\\\\dfrac{76}{2}}$.", "D": "$\\\\dfrac{74}{2}$.", "correct": "C"}, {"id": "G3_Q37", "q": "Biết $\\\\int_{1}^{4} 2f(x)dx = 7$, $\\\\int_{1}^{4} g(x)dx = 4$, tính $\\\\int_{1}^{4} (1x + 5f(x) + 2g(x))dx$", "A": "$\\\\dfrac{67}{2}$.", "B": "$\\\\underline{\\\\dfrac{66}{2}}$.", "C": "$\\\\dfrac{65}{2}$.", "D": "$\\\\dfrac{68}{2}$.", "correct": "B"}, {"id": "G3_Q38", "q": "Biết $\\\\int_{0}^{1} 3f(x)dx = 6$, $\\\\int_{0}^{1} g(x)dx = 5$, tính $\\\\int_{0}^{1} (6x + 2f(x) + 1g(x))dx$", "A": "$\\\\dfrac{23}{2}$.", "B": "$\\\\dfrac{25}{2}$.", "C": "$\\\\dfrac{26}{2}$.", "D": "$\\\\underline{\\\\dfrac{24}{2}}$.", "correct": "D"}, {"id": "G3_Q39", "q": "Biết $\\\\int_{2}^{5} 2f(x)dx = 8$, $\\\\int_{2}^{5} g(x)dx = 3$, tính $\\\\int_{2}^{5} (2x + 3f(x) + 4g(x))dx$", "A": "$\\\\dfrac{89}{2}$.", "B": "$\\\\dfrac{92}{2}$.", "C": "$\\\\underline{\\\\dfrac{90}{2}}$.", "D": "$\\\\dfrac{91}{2}$.", "correct": "C"}, {"id": "G3_Q40", "q": "Biết $\\\\int_{1}^{2} 5f(x)dx = 12$, $\\\\int_{1}^{2} g(x)dx = 7$, tính $\\\\int_{1}^{2} (3x + 2f(x) + 1g(x))dx$", "A": "$\\\\dfrac{161}{10}$.", "B": "$\\\\underline{\\\\dfrac{163}{10}}$.", "C": "$\\\\dfrac{164}{10}$.", "D": "$\\\\dfrac{162}{10}$.", "correct": "B"}, {"id": "G3_Q41", "q": "Biết $\\\\int_{0}^{3} 4f(x)dx = 14$, $\\\\int_{0}^{3} g(x)dx = 5$, tính $\\\\int_{0}^{3} (2x + 3f(x) + 2g(x))dx$", "A": "$\\\\dfrac{57}{2}$.", "B": "$\\\\dfrac{60}{2}$.", "C": "$\\\\underline{\\\\dfrac{59}{2}}$.", "D": "$\\\\dfrac{58}{2}$.", "correct": "C"}, {"id": "G3_Q42", "q": "Biết $\\\\int_{1}^{5} 3f(x)dx = 11$, $\\\\int_{1}^{5} g(x)dx = 6$, tính $\\\\int_{1}^{5} (1x + 4f(x) + 3g(x))dx$", "A": "$\\\\dfrac{133}{3}$.", "B": "$\\\\dfrac{135}{3}$.", "C": "$\\\\underline{\\\\dfrac{134}{3}}$.", "D": "$\\\\dfrac{136}{3}$.", "correct": "C"}, {"id": "G3_Q43", "q": "Biết $\\\\int_{2}^{3} 2f(x)dx = 7$, $\\\\int_{2}^{3} g(x)dx = 4$, tính $\\\\int_{2}^{3} (5x + 3f(x) + 2g(x))dx$", "A": "$\\\\dfrac{61}{2}$.", "B": "$\\\\underline{\\\\dfrac{62}{2}}$.", "C": "$\\\\dfrac{63}{2}$.", "D": "$\\\\dfrac{60}{2}$.", "correct": "B"}];
+const GROUP4 = [{"id": "G4_Q44", "q": "Biết $\\\\int\\\\limits_{0}^{1}\\\\dfrac{-21x-1}{7x+1}\\\\text{d}x=a\\\\ln 8+b,(a,b\\\\in \\\\mathbb{Q})$, tính $a$.", "A": "$\\\\dfrac{4}{7}$.", "B": "$\\\\dfrac{2}{7}$.", "C": "$\\\\dfrac{5}{7}$.", "D": "$0$.", "correct": "B"}, {"id": "G4_Q45", "q": "Cho hàm số $y=f(x)=\\\\left\\\\{\\\\begin{array}{l}3x^2-2x+4\\\\text{ khi } x\\\\geq 2\\\\4x-3\\\\text{ khi }x{<}2\\\\end{array}\\\\right.$. Gọi $F(x)$ là một nguyên hàm của hàm số $f(x)$ và $F(-1)=10,F(4)=67$. Tính $F(-4)+F(3)$.", "A": "$82$.", "B": "$84$.", "C": "$85$.", "D": "$79$.", "correct": "A"}, {"id": "G4_Q46", "q": "Cho hàm số $y=f(x)=\\\\left\\\\{\\\\begin{array}{l}3x^2+4x+2\\\\text{ khi } x\\\\geq -1\\\\2x+3\\\\text{ khi }x{<}-1\\\\end{array}\\\\right.$. Gọi $F(x)$ là một nguyên hàm liên tục của hàm số $y=f(x)$ trên $\\\\mathbb{R}$ và $F(-2)=3$. Tính $F(1)$.", "A": "$7$.", "B": "$11$.", "C": "$6$.", "D": "$9$.", "correct": "D"}, {"id": "G4_Q47", "q": "Biết $\\\\int\\\\limits_{0}^{1}\\\\left(\\\\dfrac{2}{3x+1}+2\\\\right)\\\\text{d}x=a\\\\ln 4+b$, tính $a+b$", "A": "$\\\\dfrac{7}{3}$.", "B": "$\\\\dfrac{10}{3}$.", "C": "$\\\\dfrac{8}{3}$.", "D": "$\\\\dfrac{11}{3}$.", "correct": "C"}, {"id": "G4_Q48", "q": "Biết $\\\\int\\\\limits_{2}^{4}\\\\dfrac{3x+1}{x-1}\\\\text{d}x=\\\\ln a+b$, tính $a+b$.", "A": "$90$.", "B": "$86$.", "C": "$89$.", "D": "$87$.", "correct": "D"}, {"id": "G4_Q49", "q": "Biết $\\\\int\\\\limits_{1}^{2}\\\\dfrac{6x-4}{10x-1}\\\\text{d}x=a\\\\ln 9+b\\\\ln 19+c$, tính $a+2b+c$", "A": "$\\\\dfrac{7}{25}$.", "B": "$\\\\dfrac{3}{10}$.", "C": "$\\\\dfrac{13}{50}$.", "D": "$\\\\dfrac{1}{5}$.", "correct": "C"}, {"id": "G4_Q50", "q": "Biết $\\\\int_1^3 \\\\dfrac{4x-1}{5x-1}dx = a\\\\ln 4 + b\\\\ln 14 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{37}{25}$", "B": "$\\\\dfrac{38}{25}$", "C": "$\\\\dfrac{39}{25}$", "D": "$\\\\dfrac{41}{25}$", "correct": "C"}, {"id": "G4_Q51", "q": "Biết $\\\\int_2^4 \\\\dfrac{5x+2}{3x-1}dx = a\\\\ln 5 + b\\\\ln 11 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{41}{9}$", "B": "$\\\\dfrac{42}{9}$", "C": "$\\\\dfrac{43}{9}$", "D": "$\\\\dfrac{44}{9}$", "correct": "A"}, {"id": "G4_Q52", "q": "Biết $\\\\int_0^3 \\\\dfrac{2x+5}{3x+2}dx = a\\\\ln 2 + b\\\\ln 11 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{28}{9}$", "B": "$\\\\dfrac{29}{9}$", "C": "$\\\\dfrac{30}{9}$", "D": "$\\\\dfrac{31}{9}$", "correct": "B"}, {"id": "G4_Q53", "q": "Biết $\\\\int_1^2 \\\\dfrac{7x-3}{8x-1}dx = a\\\\ln 7 + b\\\\ln 15 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{38}{64}$", "B": "$\\\\dfrac{39}{64}$", "C": "$\\\\dfrac{40}{64}$", "D": "$\\\\dfrac{41}{64}$", "correct": "B"}, {"id": "G4_Q54", "q": "Biết $\\\\int_1^3 \\\\dfrac{2x+1}{3x+1}dx = a\\\\ln 4 + b\\\\ln 10 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{13}{9}$", "B": "$\\\\dfrac{14}{9}$", "C": "$\\\\dfrac{15}{9}$", "D": "$\\\\dfrac{16}{9}$", "correct": "A"}, {"id": "G4_Q55", "q": "Biết $\\\\int_0^1 \\\\dfrac{4x+3}{5x+2}dx = a\\\\ln 2 + b\\\\ln 7 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{25}{25}$", "B": "$\\\\dfrac{26}{25}$", "C": "$\\\\dfrac{27}{25}$", "D": "$\\\\dfrac{28}{25}$", "correct": "C"}, {"id": "G4_Q56", "q": "Biết $\\\\int_2^5 \\\\dfrac{2x-1}{4x-3}dx = a\\\\ln 5 + b\\\\ln 17 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{12}{8}$", "B": "$\\\\dfrac{13}{8}$", "C": "$\\\\dfrac{14}{8}$", "D": "$\\\\dfrac{15}{8}$", "correct": "B"}, {"id": "G4_Q57", "q": "Biết $\\\\int_1^4 \\\\dfrac{3x+1}{2x+1}dx = a\\\\ln 3 + b\\\\ln 9 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{16}{4}$", "B": "$\\\\dfrac{17}{4}$", "C": "$\\\\dfrac{18}{4}$", "D": "$\\\\dfrac{19}{4}$", "correct": "B"}, {"id": "G4_Q58", "q": "Biết $\\\\int_1^3 \\\\dfrac{5x+1}{6x+1}dx = a\\\\ln 7 + b\\\\ln 19 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{59}{36}$", "B": "$\\\\dfrac{60}{36}$", "C": "$\\\\dfrac{61}{36}$", "D": "$\\\\dfrac{62}{36}$", "correct": "C"}, {"id": "G4_Q59", "q": "Biết $\\\\int_1^2 \\\\dfrac{3x-2}{7x-1}dx = a\\\\ln 6 + b\\\\ln 13 + c$, tính $a+2b+c$", "A": "$\\\\dfrac{9}{49}$", "B": "$\\\\dfrac{10}{49}$", "C": "$\\\\dfrac{11}{49}$", "D": "$\\\\dfrac{12}{49}$", "correct": "B"}];
+function shuffle(a){
+  const arr = a.slice();
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+
+// Game constants
+const TOTAL_PER_GAME = 20;
+const SECONDS_PER_Q = 60;
+let lastBeepSecond = null;
+// Audio
+// Intro MP3 (phát ở màn hình nhập Họ tên / Lớp)
+const INTRO_SRC = "intro.mp3";
+let introAudio = null;
+window.addEventListener("DOMContentLoaded", () => { introAudio = document.getElementById("introAudio"); });
+let introPlaying = false;
+
+function tryPlayIntro(){
+  if(!introAudio) { introAudio = document.getElementById("introAudio"); if(!introAudio) return; }
+
+  try{
+    // luôn reset về đầu
+    introAudio.pause();
+    introAudio.currentTime = 0;
+  }catch(e){}
+
+  // đảm bảo có src đúng (GitHub Pages phân biệt hoa thường)
+  try{ introAudio.src = INTRO_SRC + "?v=" + Date.now(); }catch(e){}
+
+  // đảm bảo không bị mute / volume = 1
+  try{ introAudio.muted = false; }catch(e){}
+  try{ introAudio.volume = 1.0; }catch(e){}
+
+  // một số trình duyệt cần playsinline
+  try{ introAudio.setAttribute("playsinline",""); }catch(e){}
+
+  // KHÔNG gọi load() ngay trước play() (một số máy sẽ làm play bị fail)
+  let p = null;
+  try{
+    p = introAudio.play();   // phải gọi trong click
+    introPlaying = true;
+  }catch(e){
+    introPlaying = false;
+    return;
+  }
+  if(p && p.catch){
+    p.catch(()=>{ introPlaying = false; });
+  }
+}
+
+function stopIntro(){
+  if(!introAudio) { introAudio = document.getElementById("introAudio"); if(!introAudio) return; }
+  introAudio.pause();
+  try{ introAudio.currentTime = 0; }catch(e){}
+  introPlaying = false;
+}
+
+function ensureIntro(){
+  if(!introPlaying) tryPlayIntro();
+
+
+// Tự phát intro ở "cú chạm/nhấp đầu tiên" trên trang (giống game cũ)
+// (Trình duyệt vẫn yêu cầu có tương tác người dùng, nên ta bắt sự kiện sớm nhất)
+let __introArmed = true;
+function __tryAutoIntroOnce(){
+  if(!__introArmed) return;
+  __introArmed = false;
+  try{ __tryAutoIntroOnce(); }catch(e){}
+  document.removeEventListener("pointerdown", __tryAutoIntroOnce, true);
+  document.removeEventListener("touchstart", __tryAutoIntroOnce, true);
+  document.removeEventListener("keydown", __tryAutoIntroOnce, true);
+}
+document.addEventListener("pointerdown", __tryAutoIntroOnce, true);
+document.addEventListener("touchstart", __tryAutoIntroOnce, true);
+document.addEventListener("keydown", __tryAutoIntroOnce, true);
+
+}
+
+let audioOn = true;
+let audioCtx = null;
+let audioOut = null;
+
+function getAudioOut(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC){ return null; }
+  audioCtx = audioCtx || new AC();
+  try{ if(audioCtx.state==="suspended") audioCtx.resume(); }catch(e){}
+  if(!audioOut){
+    const comp = audioCtx.createDynamicsCompressor();
+    comp.threshold.value = -22;
+    comp.knee.value = 30;
+    comp.ratio.value = 10;
+    comp.attack.value = 0.003;
+    comp.release.value = 0.25;
+
+    const master = audioCtx.createGain();
+    master.gain.value = 0.95;
+
+    comp.connect(master);
+    master.connect(audioCtx.destination);
+    audioOut = comp;
+  }
+  return audioOut;
+}
+
+function beep(freqs, durMs, waveType="sine", peak=0.28){
+  const _out = getAudioOut();
+  if(!_out) return;
+
+  if(!audioOn) return;
+  try{
+    const out = getAudioOut();
+    const now = audioCtx.currentTime;
+    const end = now + (durMs/1000);
+
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(peak, now + 0.015);
+    g.gain.setValueAtTime(peak*0.65, now + 0.12);
+    g.gain.exponentialRampToValueAtTime(0.0001, end);
+    g.connect(out);
+
+    freqs.forEach((f,i)=>{
+      const o = audioCtx.createOscillator();
+      o.type = waveType;
+      o.frequency.setValueAtTime(f, now);
+      o.detune.setValueAtTime((i%2 ? -6 : 6), now); // hơi "rung" cho mạnh mẽ
+      o.connect(g);
+      o.start(now + i*0.01);
+      o.stop(end + 0.05);
+    });
+  }catch(e){}
+}
+
+function kick(){
+  if(!audioOn) return;
+  try{
+    const out = getAudioOut();
+    const now = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(160, now);
+    o.frequency.exponentialRampToValueAtTime(55, now + 0.16);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(0.38, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    o.connect(g); g.connect(out);
+    o.start(now); o.stop(now + 0.25);
+  }catch(e){}
+}
+
+function noiseBurst(dur=0.12, peak=0.22){
+  const _out = getAudioOut();
+  if(!_out) return;
+
+  if(!audioOn) return;
+  try{
+    const out = getAudioOut();
+    const now = audioCtx.currentTime;
+    const buffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate*dur), audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<data.length;i++){
+      data[i] = (Math.random()*2-1) * (1 - i/data.length);
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer = buffer;
+
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(peak, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+    src.connect(g); g.connect(out);
+    src.start(now); src.stop(now + dur);
+  }catch(e){}
+}
+
+function soundGood(){
+  // Âm đúng: sôi nổi, mạnh mẽ (~3s)
+  kick(); noiseBurst(0.10, 0.20);
+
+  // Fanfare (C major) + lên tông
+  beep([523.25, 659.25, 783.99], 650, "sawtooth", 0.26);
+  setTimeout(()=>beep([659.25, 783.99, 987.77], 700, "sawtooth", 0.26), 220);
+  setTimeout(()=>beep([783.99, 987.77, 1174.66], 750, "triangle", 0.24), 480);
+
+  setTimeout(()=>{
+    noiseBurst(0.14, 0.18);
+    beep([1046.50, 1318.51], 850, "square", 0.22);
+  }, 820);
+
+  // Chốt bằng hợp âm sáng
+  setTimeout(()=>beep([1046.50, 1318.51, 1567.98], 1400, "sine", 0.20), 1250);
+}
+
+function soundBad(){
+  // Âm sai: rõ ràng, dứt khoát (~1.6s)
+  noiseBurst(0.08, 0.14);
+  beep([220, 196], 1100, "sawtooth", 0.26);
+  setTimeout(()=>beep([174], 700, "sine", 0.18), 450);
+}
+
+
+
+// DOM
+const $ = (id)=>document.getElementById(id);
+const screenStart = $("screenStart");
+const screenGame = $("screenGame");
+const screenResult = $("screenResult");
+
+const btnStart = $("btnStart");
+const btnHow = $("btnHow");
+const howText = $("howText");
+
+
+const playerName = $("playerName");
+const playerClass = $("playerClass");
+// Phát intro khi người dùng tương tác ô nhập (đảm bảo chạy được trên điện thoại)
+["pointerdown","touchstart","focus","input","keydown"].forEach(evt=>{
+  playerName && playerName.addEventListener(evt, ensureIntro, {passive:true});
+  playerClass && playerClass.addEventListener(evt, ensureIntro, {passive:true});
+});
+const playerWarn = $("playerWarn");
+const btnExport = $("btnExport");
+const exportNote = $("exportNote");
+
+
+const qNum = $("qNum");
+const qTimer = $("qTimer");
+const timeBar = $("timeBar");
+const qText = $("qText");
+const choices = $("choices");
+const toast = $("toast");
+
+const btnPrev = $("btnPrev");
+const btnNext = $("btnNext");
+const btnExitReview = $("btnExitReview");
+const navHint = $("navHint");
+
+const sProg = $("sProg");
+const sGood = $("sGood");
+const sBad  = $("sBad");
+
+const btnStop = $("btnStop");
+const btnMute = $("btnMute");
+
+const rGood = $("rGood");
+const rBad  = $("rBad");
+const rScore= $("rScore");
+const resultTime = $("resultTime");
+const btnReplay = $("btnReplay");
+const btnReview = $("btnReview");
+const reviewNote = $("reviewNote");
+
+// State
+let game = null;
+let reviewMode = false;
+let tick = null;
+
+function show(screen){
+  [screenStart, screenGame, screenResult].forEach(s=>s.classList.remove("active"));
+  screen.classList.add("active");
+}
+
+// Chuẩn hoá chuỗi KaTeX: kho JSON thường có \\ (2 gạch chéo) -> KaTeX cần \ (1 gạch chéo)
+function normKatex(s){
+  return (s || "").replace(/\\\\/g, "\\");
+}
+
+function buildGame(){
+  const pick20raw = []
+    .concat(shuffle(GROUP1).slice(0, 8))
+    .concat(shuffle(GROUP2).slice(0, 8))
+    .concat(shuffle(GROUP3).slice(0, 2))
+    .concat(shuffle(GROUP4).slice(0, 2));
+  const pick20 = shuffle(pick20raw).slice(0, TOTAL_PER_GAME).map(q => ({
+    id: q.id,
+    q: normKatex(q.q),
+    options: { A:normKatex(q.A), B:normKatex(q.B), C:normKatex(q.C), D:normKatex(q.D) },
+    correct: q.correct,
+    chosen: null,
+    locked: false,
+    timeLeft: SECONDS_PER_Q
+  }));
+  return {
+    startAt: Date.now(),
+    endAt: null,
+    index: 0,
+    items: pick20,
+    finished: false
+  };
+}
+
+function stopTimer(){ if(tick){ clearInterval(tick); tick=null; } }
+
+function startTimer(){
+  stopTimer();
+  tick = setInterval(()=>{
+    if(!game || game.finished) return;
+    const item = game.items[game.index];
+    if(item.locked) return;
+    item.timeLeft -= 0.1;
+    const sec = Math.ceil(item.timeLeft);
+    if(audioOn && sec <= 5 && sec > 0 && sec !== lastBeepSecond){
+      beep(880, 120);
+      lastBeepSecond = sec;
+    }
+    if(item.timeLeft <= 0){
+      item.timeLeft = 0;
+      onTimeout();
+      return;
+    }
+    renderTimer(item.timeLeft);
+  }, 100);
+}
+
+function renderTimer(sec){
+  const t = Math.max(0, Math.ceil(sec));
+  const mm = Math.floor(t/60);
+  const ss = t % 60;
+  qTimer.textContent = pad2(mm) + ":" + pad2(ss);
+  const pct = (sec/SECONDS_PER_Q)*100;
+  timeBar.style.width = pct + "%";
+}
+
+function stats(){
+  let done=0, good=0, bad=0;
+  for(const it of game.items){
+    if(it.chosen!==null){
+      done++;
+      if(it.chosen===it.correct) good++;
+      else bad++;
+    }
+  }
+  return {done, good, bad};
+}
+
+function renderStats(){
+  const st = game ? stats() : {done:0, good:0, bad:0};
+  sProg.textContent = st.done + "/" + TOTAL_PER_GAME;
+  sGood.textContent = String(st.good);
+  sBad.textContent  = String(st.bad);
+}
+
+function renderQuestion(){
+  const it = game.items[game.index];
+  qNum.textContent = "Câu " + (game.index+1) + "/" + TOTAL_PER_GAME;
+  toast.textContent = "";
+  toast.className = "toast";
+  navHint.textContent = it.locked ? "Đã chấm. Bấm “Câu tiếp” để qua câu mới." : "Chọn đáp án để chấm.";
+  btnPrev.disabled = (game.index===0);
+  btnNext.disabled = !it.locked;
+
+  qText.innerHTML = it.q;
+  choices.innerHTML = "";
+
+  const letters = ["A","B","C","D"];
+  for(const L of letters){
+    const btn = document.createElement("button");
+    btn.className = "btn choice";
+    btn.type = "button";
+    btn.innerHTML = "<b style='margin-right:10px;color:var(--orange2)'>" + L + ".</b> <span>" + it.options[L] + "</span>";
+    if(it.locked) btn.classList.add("disabled");
+    btn.addEventListener("click", ()=>choose(L));
+    choices.appendChild(btn);
+  }
+
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([qText, choices]).catch(()=>{}); }
+  renderTimer(it.timeLeft);
+  if(it.locked) markChoices(it);
+  renderStats();
+}
+
+function markChoices(it){
+  const nodes = [...choices.children];
+  const letters = ["A","B","C","D"];
+  nodes.forEach((node, idx)=>{
+    node.classList.remove("correct","wrong");
+    const L = letters[idx];
+    if(L===it.correct) node.classList.add("correct");
+    if(it.chosen && L===it.chosen && it.chosen!==it.correct) node.classList.add("wrong");
+  });
+}
+
+function lockAndMaybeFinish(){
+  const it = game.items[game.index];
+  btnNext.disabled = false;
+
+  if(game.index === TOTAL_PER_GAME-1){
+    setTimeout(()=>finishGame(), 600);
+  }
+}
+
+function choose(letter){
+  if(!game || game.finished) return;
+  const it = game.items[game.index];
+  if(it.locked) return;
+
+  it.chosen = letter;
+  it.locked = true;
+  it.spent = Math.max(0, SECONDS_PER_Q - it.timeLeft);
+
+  if(letter === it.correct){
+    toast.textContent = "✅ Chính xác!";
+    toast.className = "toast good";
+    soundGood();
+  } else {
+    toast.textContent = "❌ Chưa đúng.";
+    toast.className = "toast bad";
+    soundBad();
+  }
+  markChoices(it);
+  renderStats();
+  lockAndMaybeFinish();
+
+  // Tự động chuyển câu kế tiếp sau khi hiện đáp án đúng
+  const gradedIndex = game.index;
+  if(gradedIndex < TOTAL_PER_GAME-1){
+    setTimeout(()=>{
+      if(!game || game.finished) return;
+      if(game.index !== gradedIndex) return; // tránh nhảy 2 lần nếu người dùng bấm Next
+      next();
+    }, 900);
+  }
+}
+
+function onTimeout(){
+  const it = game.items[game.index];
+  if(it.locked) return;
+
+  it.chosen = "—";
+  it.locked = true;
+  it.spent = SECONDS_PER_Q;
+
+  toast.textContent = "⏱️ Hết giờ! Tính là sai.";
+  toast.className = "toast bad";
+  soundBad();
+  markChoices(it);
+  renderStats();
+  lockAndMaybeFinish();
+
+  // Hết giờ: hiện đáp án đúng rồi tự chuyển câu
+  const gradedIndex = game.index;
+  if(gradedIndex < TOTAL_PER_GAME-1){
+    setTimeout(()=>{
+      if(!game || game.finished) return;
+      if(game.index !== gradedIndex) return;
+      next();
+    }, 900);
+  }
+}
+
+function next(){
+  if(!game) return;
+  if(game.index < TOTAL_PER_GAME-1){
+    game.index++;
+    lastBeepSecond = null;
+    renderQuestion();
+  } else {
+    finishGame();
+  }
+}
+
+function prev(){
+  if(!game) return;
+  if(game.index > 0){
+    game.index--;
+    renderQuestion();
+  }
+}
+
+
+// ===== NTS: GỬI KẾT QUẢ VỀ SHEET TỔNG =====
+const NTS_RESULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzQnnFCNfsSY7CNnlDnT1GeqW5jSrbwwh8cqQ9zBCNQBQ8oaMgLetUi9OOm9idvVvF4/exec";
+
+function ntsSendResultToGoogleSheet(st, score10, totalSec){
+  try {
+    const payload = {
+      gameCode: "TICH_PHAN",
+      gameName: "ÔN TẬP TÍCH PHÂN",
+      playerName: game && game.playerName ? game.playerName : ((playerName?.value || "").trim()),
+      playerClass: game && game.playerClass ? game.playerClass : ((playerClass?.value || "").trim()),
+      startTime: game && game.startAt ? new Date(game.startAt).toISOString() : "",
+      endTime: game && game.endAt ? new Date(game.endAt).toISOString() : new Date().toISOString(),
+      totalSeconds: totalSec,
+      totalQuestions: TOTAL_PER_GAME,
+      correct: st.good,
+      wrong: st.bad,
+      score: score10
+    };
+
+    fetch(NTS_RESULT_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(() => {});
+  } catch(e) {
+    // Lỗi gửi Sheet không làm ảnh hưởng game.
+  }
+}
+// ===== HẾT NTS =====
+
+function finishGame(){
+  if(!game || game.finished) return;
+  stopTimer();
+  game.endAt = Date.now();
+  game.finished = true;
+
+  const st = stats();
+  const score10 = Math.round((st.good / TOTAL_PER_GAME) * 10 * 100) / 100;
+
+  rGood.textContent = st.good;
+  rBad.textContent  = st.bad;
+  rScore.textContent= score10;
+
+  const totalSec = Math.round((game.endAt - game.startAt)/1000);
+
+  // Gửi 1 dòng kết quả về Sheet tổng; lỗi mạng không ảnh hưởng game.
+  ntsSendResultToGoogleSheet(st, score10, totalSec);
+  const mm = Math.floor(totalSec/60), ss = totalSec%60;
+  resultTime.textContent = "Thời gian: " + mm + "m " + ss + "s";
+
+  btnStop.disabled = true;
+  reviewMode = false;
+  if(btnExitReview) btnExitReview.style.display = "none";
+  show(screenResult);
+  renderStats();
+  if(exportNote) exportNote.style.display = "";
+}
+
+
+function _safeFilename(s){
+  try{
+    return (s||"").toString()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-zA-Z0-9]+/g,"_")
+      .replace(/^_+|_+$/g,"")
+      .slice(0,40) || "HocSinh";
+  }catch(e){
+    return "HocSinh";
+  }
+}
+function _htmlToText(s){
+  return (s||"").toString()
+    .replace(/<img[^>]*>/gi,"[CT]")
+    .replace(/<br\s*\/?>/gi,"\n")
+    .replace(/<\/p>/gi,"\n")
+    .replace(/<[^>]*>/g,"")
+    .replace(/&nbsp;/g," ")
+    .replace(/&amp;/g,"&")
+    .replace(/\n{3,}/g,"\n\n")
+    .replace(/[ \t]{2,}/g," ")
+    .trim();
+}
+function exportExcel(){
+  if(!game || !game.finished) return;
+  const st = stats();
+  const score10 = Math.round((st.good / TOTAL_PER_GAME) * 10 * 100) / 100;
+  const totalSec = Math.round((game.endAt - game.startAt)/1000);
+
+  const now = new Date(game.endAt || Date.now());
+  const stamp = now.toISOString().slice(0,19).replace(/[:T]/g,"-");
+  const fn = `Ket_qua_on_tap_nguyen_ham_${_safeFilename(game.playerName)}_${_safeFilename(game.playerClass)}_${stamp}.xlsx`;
+
+  if(window.XLSX){
+    const summaryAOA = [
+      ["ÔN TẬP TÍCH PHÂN - TẠO BỞI MR SANG"],
+      ["Họ và tên", game.playerName || ""],
+      ["Lớp", game.playerClass || ""],
+      ["Bắt đầu", new Date(game.startAt).toLocaleString("vi-VN")],
+      ["Kết thúc", new Date(game.endAt).toLocaleString("vi-VN")],
+      ["Thời gian làm (giây)", totalSec],
+      ["Số câu", TOTAL_PER_GAME],
+      ["Đúng", st.good],
+      ["Sai", st.bad],
+      ["Điểm (10)", score10],
+    ];
+    const ws1 = XLSX.utils.aoa_to_sheet(summaryAOA);
+
+    const header = ["STT","ID","Câu hỏi","A","B","C","D","Đáp án đúng","Đã chọn","Kết quả","Thời gian (giây)"];
+    const rows = [header];
+    for(let i=0;i<game.items.length;i++){
+      const it = game.items[i];
+      const chosen = (it.chosen===null) ? "" : it.chosen;
+      const result = (chosen===it.correct) ? "Đúng" : "Sai";
+      const spent = (typeof it.spent === "number") ? Math.round(it.spent) : "";
+      rows.push([
+        i+1,
+        it.id,
+        _htmlToText(it.q),
+        _htmlToText(it.options.A),
+        _htmlToText(it.options.B),
+        _htmlToText(it.options.C),
+        _htmlToText(it.options.D),
+        it.correct,
+        chosen,
+        result,
+        spent
+      ]);
+    }
+    const ws2 = XLSX.utils.aoa_to_sheet(rows);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws1, "Tong_quan");
+    XLSX.utils.book_append_sheet(wb, ws2, "Chi_tiet");
+    XLSX.writeFile(wb, fn);
+  } else {
+    alert("Thiếu thư viện XLSX (cần Internet để tải). Anh/chị thử mở lại khi có mạng, hoặc dùng file CSV thay thế.");
+  }
+}
+
+function startNewGame(name, cls){
+  game = buildGame();
+  lastBeepSecond = null;
+  reviewMode = false;
+  if(btnExitReview) btnExitReview.style.display = "none";
+  game.playerName = name;
+  game.playerClass = cls;
+  show(screenGame);
+  if(exportNote) exportNote.style.display = "none";
+  btnStop.disabled = false;
+  renderQuestion();
+  startTimer();
+}
+
+btnStart.addEventListener("click", ()=>{
+  const name = (playerName?.value || "").trim();
+  const cls  = (playerClass?.value || "").trim();
+  if(!name || !cls){
+    if(playerWarn) playerWarn.style.display = "";
+    if(!name && playerName) playerName.focus();
+    else if(playerClass) playerClass.focus();
+    return;
+  }
+  if(playerWarn) playerWarn.style.display = "none";
+
+
+  try{ if(audioOn) beep(440, 20); }catch(e){} // unlock audio
+  // Phát intro sau thao tác người dùng để tránh bị chặn autoplay
+  try{ __tryAutoIntroOnce(); }catch(e){}
+  // Ngừng intro ngay khi bắt đầu chơi để học sinh tập trung
+  try{ stopIntro(); __introArmed = false; }catch(e){}
+  startNewGame(name, cls);
+});
+
+btnHow.addEventListener("click", ()=>{
+  howText.style.display = (howText.style.display==="none") ? "" : "none";
+  howText.textContent = "Chọn 1 đáp án (A–D). Sau khi chấm, đáp án đúng sẽ được tô xanh. Hết 60 giây mà chưa chọn thì tính sai.";
+});
+
+btnPrev.addEventListener("click", prev);
+btnNext.addEventListener("click", next);
+
+btnStop.addEventListener("click", ()=>{
+  if(!game) return;
+  finishGame();
+});
+
+btnMute.addEventListener("click", ()=>{
+  audioOn = !audioOn;
+  btnMute.textContent = audioOn ? "Tắt âm" : "Bật âm";
+  if(audioOn) beep(660, 40);
+});
+
+btnExit.addEventListener("click", ()=>{
+  const ok = confirm("Bạn muốn thoát? Tiến trình hiện tại sẽ không được tính.");
+  if(!ok) return;
+  stopTimer();
+  stopIntro();
+  game = null;
+  reviewMode = false;
+  if(btnExitReview) btnExitReview.style.display = "none";
+  show(screenStart);
+});
+
+
+btnReplay.addEventListener("click", ()=>{
+  // dùng lại thông tin học sinh của lượt vừa rồi (hoặc từ ô nhập)
+  const name = (game && game.playerName) ? game.playerName : ((playerName?.value||"").trim());
+  const cls  = (game && game.playerClass) ? game.playerClass : ((playerClass?.value||"").trim());
+  startNewGame(name || "—", cls || "—");
+  reviewNote.style.display = "none";
+});
+
+btnExport && btnExport.addEventListener("click", exportExcel);
+
+btnReview.addEventListener("click", ()=>{
+  if(!game) return;
+  reviewMode = true;
+  if(btnExitReview) btnExitReview.style.display = "";
+  show(screenGame);
+  reviewNote.style.display = "";
+  stopTimer();
+  renderQuestion();
+  qTimer.textContent = "Xem lại";
+  timeBar.style.width = "100%";
+  navHint.textContent = "Chế độ xem lại: bấm ↩ Trở lại kết quả để thoát.";
+});
+
+btnExitReview && btnExitReview.addEventListener("click", ()=>{
+  // Thoát chế độ xem lại
+  reviewMode = false;
+  if(btnExitReview) btnExitReview.style.display = "none";
+  if(reviewNote) reviewNote.style.display = "none";
+  show(screenResult);
+});
+
+// init
+show(screenStart);
+// Thử phát intro (có thể bị chặn trên mobile nếu chưa tương tác)
+setTimeout(()=>{ ensureIntro(); }, 300);
+
+renderStats();
+</script>
+
+<script>
+/* Intro MP3: play on FIRST user gesture (works for local file:// and Pages). */
+(function(){
+  let played = false;
+  let a = null;
+  function play(){
+    if(played) return;
+    played = true;
+    try{
+      // Create fresh Audio each time to avoid null refs / stale state
+      a = new Audio('intro.mp3?cb=' + Date.now());
+      a.preload = 'auto';
+      a.muted = false;
+      a.volume = 1;
+      const p = a.play();
+      if(p && p.catch) p.catch(function(){ /* swallow */ });
+    }catch(e){}
+    document.removeEventListener('pointerdown', play, true);
+    document.removeEventListener('mousedown', play, true);
+    document.removeEventListener('touchstart', play, true);
+    document.removeEventListener('keydown', play, true);
+  }
+  // Use multiple events for maximum compatibility
+  document.addEventListener('pointerdown', play, true);
+  document.addEventListener('mousedown', play, true);
+  document.addEventListener('touchstart', play, true);
+  document.addEventListener('keydown', play, true);
+})();
+</script>
+
+</body>
+</html>
